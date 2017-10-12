@@ -1,7 +1,8 @@
-> Built for personal use only
+> Built for personal use only.
 
 # What is ronin?
-*ronin* help you run your website quickly inside a docker with just one click.
+**ronin** make it easy to run your website inside docker with just one click, for
+both development and production.
 
 # Installation
 ```
@@ -13,16 +14,18 @@ $ ./install
 once the installation is completed, open your browser and type `http://ronin.dev`
 
 # Configuration
-If you want to customize ronin for your own, then please rename `.env.example`
-to `.env` and edit the configuration.
+If you want to customize ronin, then rename `.env.example` to `.env` and
+edit the configuration.
 
-Ronin support only laravel for now, will add support for more websites later.
+By default ronin comes with full support to laravel framework, but it can be
+customized to support any framework, even custom websites.
 
 ## Add your website:
 If you want to add your own website, follow these steps:
 
 1. copy the source code to your website inside `website/src`
 2. backup your .env file
+3. remove .env file
 3. copy the content of `/var/lib/mysql` of your mysql database inside `db/config/var-lib/mysql`
 4. run `./install`
 
@@ -77,7 +80,7 @@ the password of your database
 **DO NOT EDIT** will be updated automatically
 
 ### REDIS_PASSWORD
-**DO NOT EDIT**
+Redis password
 
 ### REDIS_PORT
 **DO NOT EDIT**
@@ -123,3 +126,4 @@ so you can just move on with your life, with no problem's :)
 * make it easy to migrate an existing website to ronin
 * improve development and production configuration
 * allow developer to pick a revese proxy: nginx, apache2 or haproxy.
+* add an option for sql script path, to import the sql dump, instead of copying /var/lib/mysql
