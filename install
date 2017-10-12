@@ -51,8 +51,6 @@ if [ ! -d website/src ]; then
 fi
 
 echo ---------------------------------------------------------- Configuration --
-number_of_website_instances=1
-
 export APP_URL=$APP_SCHEME://$APP_DOMAIN
 
 echo ---------------------------------------------- Install required packages --
@@ -62,7 +60,7 @@ sudo apt install jq
 
 echo ------------------------------------------------------ Docker containers --
 docker-compose down
-docker-compose up -d --build --scale website=$number_of_website_instances
+docker-compose -p $DOCKER_PREFIX up -d --build --scale website=$NUMBER_OF_WEBSITE_INSTANCES
 
 echo "---------------------------------------------- Get services ip address's --"
 echo -- Website services:
