@@ -1,15 +1,6 @@
 #!/bin/bash
 
-echo ------------------------------------------------------ Composer packages --
-if [[ -d vendor ]]; then
-    composer update
-else
-    composer install
-fi
-
 echo ----------------------------------------------------- Populate .env file --
-php artisan key:generate
-
 sed -i "s/%APP_NAME%/${X_APP_NAME}/" .env
 sed -i "s/%APP_ENV%/${X_APP_ENV}/" .env
 sed -i "s/%APP_DEBUG%/${X_APP_DEBUG}/" .env
@@ -34,8 +25,17 @@ echo ----------------------------------------------- Edit configuration files --
 sed -i "s/'client' => 'predis',/'client' => 'phpredis',/" config/database.php
 sed -i "s/'prefix' => 'laravel',/'prefix' => '${CACHE_PREFIX}',/" config/cache.php
 
+echo ------------------------------------------------------ Composer packages --
+if [[ -d vendor ]]; then
+    composer update
+else
+    composer install
+fi
+
+php artisan key:generate
+
 echo ------------------------------------------------------------- Deployment --
-if [ $APP_ENV = 'deployment' ]; then
+if [ $X_APP_ENV = 'deployment' ]; then
     composer install --optimize-autoloader
     php artisan config:cache
     php artisan route:cache

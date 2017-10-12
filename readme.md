@@ -1,12 +1,125 @@
-[Gomri Tech website source code](https://gomri.tech)
+> Built for personal use only
 
-# Requirements
-
-* docker `Docker version 17.09.0-ce, build afdb6d4`
-* docker-compose `docker-compose version 1.16.1, build 6d1ac21`
+# What is ronin?
+*ronin* help you run your website quickly inside a docker with just one click.
 
 # Installation
+```
+$ git clone https://github.com/OussamaElgoumri/ronin.git my-app
+$ cd my-app
+$ ./install
+```
 
-All you need to do is run `./install` and it will take care of everything ;)
+once the installation is completed, open your browser and type `http://ronin.dev`
 
-after the installation is complete, go to your browser, and type `http://gomri-tech.dev`
+# Configuration
+If you want to customize ronin for your own, then please rename `.env.example`
+to `.env` and edit the configuration.
+
+Ronin support only laravel for now, will add support for more websites later.
+
+## Add your website:
+If you want to add your own website, follow these steps:
+
+1. copy the source code to your website inside `website/src`
+2. backup your .env file
+3. copy the content of `/var/lib/mysql` of your mysql database inside `db/config/var-lib/mysql`
+4. run `./install`
+
+don't forget to add your custom configuration to the .env file inside `website/src`
+
+that's it :)
+
+## Configuration environment variables:
+### APP_DEBUG
+`default: true`
+
+### APP_ENV
+`default: development`
+
+### APP_LOG_LEVEL
+`default: debug`
+
+### APP_NAME
+Your application name
+
+### APP_SCHEME
+http or https
+
+### APP_TYPE
+`laravel` install a laravel application
+
+### APP_DOMAIN
+The domain of your application
+
+### CACHE_PREFIX
+used as a prefix for cache services like `redis`
+
+### DB_CONNECTION
+`mysql`, or the name of the connection you use on your web application
+
+### DB_DATABASE
+the name of your database
+
+### DB_HOST
+**DO NOT EDIT** will be updated automatically
+
+### DB_USERNAME
+the username of your database
+
+### DB_PASSWORD
+the password of your database
+
+### DB_PORT
+**DO NOT EDIT**
+
+### REDIS_HOST
+**DO NOT EDIT** will be updated automatically
+
+### REDIS_PASSWORD
+**DO NOT EDIT**
+
+### REDIS_PORT
+**DO NOT EDIT**
+
+### BROADCAST_DRIVER
+`default: redis` your broadcast driver
+
+### CACHE_DRIVER
+`default: redis` your cache driver
+
+### QUEUE_DRIVER
+`default: redis` queue driver
+
+### SESSION_DRIVER
+`default: redis` session driver
+
+### SESSION_LIFETIME
+`default: redis` session lifetime
+
+# How ronin work?
+on the host machine, ronin install `apache2` and use it as a reverse proxy, and a
+load balancer. it also uses `jq` to cleanly extract values from `docker inspect`
+command.
+
+`ronin` use 3 official images from hub.docker.com:
+1. mysql:5.7
+2. redis:4
+3. php:7.0-apache
+
+Ronin will automatically use your `username` and id, to properly update /etc/passwd
+of the guest machine, and set the permissions of the website directories and files
+so you can just move on with your life, with no problem's :)
+
+* To update the virtual host of your website, please edit `website/config/000-default.conf`
+* To update apache2.conf used on your website, please edit `website/config/apache2.conf`
+* To change the user/id used on the website please edit `website/config/passwd`
+* to change the php configuration for production or development please edit `website/config/php-development.ini` or `website/config/php-production.ini` for production
+
+# Contribute
+* support windows and mac
+* add configuration variables for php version, mysql version and redis
+* add support for other frameworks like wordpress, drupal..
+* make it easy to migrate an existing website to ronin
+* improve development and production configuration
+* allow developer to pick a revese proxy: nginx, apache2 or haproxy.

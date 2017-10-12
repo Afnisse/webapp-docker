@@ -14,11 +14,19 @@ fi
 
 . .env
 
+if [ ! -d db ]; then
+    mkdir db
+    mkdir db/config
+    mkdir db/config/var-lib-mysql
+fi
+
 echo ----------------------------------------------------------- Installation --
 echo -- environment:
 if [ ! -f website/config/passwd ]; then
     cp slugs/passwd website/config/passwd
     sed -i "s/%USER%/$USER/" website/config/passwd
+    sed -i "s/%UID%/$UID/" website/config/passwd
+    sed -i "s/%GID%/`id -g $USER`/" website/config/passwd
 fi
 
 echo -- website:
@@ -60,20 +68,20 @@ echo "---------------------------------------------- Get services ip address's -
 echo -- Website services:
 __BALANCER_MEMBER__=
 
-for service in `docker-compose images | sed 1,2d | awk '{ print $1 }' | grep gomritech_website`
+for service in `docker-compose images | sed 1,2d | awk '{ print $1 }' | grep ronin_website`
 do
-    ip_website=`docker inspect $service | jq .[0].NetworkSettings.Networks.gomritech_default.IPAddress | sed 's/"//g'`
+    ip_website=`docker inspect $service | jq .[0].NetworkSettings.Networks.ronin_default.IPAddress | sed 's/"//g'`
     __BALANCER_MEMBER__+="BalancerMember http://${ip_website}"$'\n        '
 done
 
 __BALANCER_MEMBER__="$(sed -e 's/[[:space:]]*$//' <<<${__BALANCER_MEMBER__})"
 
 echo -- DB services:
-db_ip=`docker inspect gomritech_db_1 | jq .[0].NetworkSettings.Networks.gomritech_default.IPAddress | sed 's/"//g'`
+db_ip=`docker inspect ronin_db_1 | jq .[0].NetworkSettings.Networks.ronin_default.IPAddress | sed 's/"//g'`
 sed -i "s/%DB_HOST%/$db_ip/" .env
 
 echo -- Redis services:
-redis_ip=`docker inspect gomritech_redis_1 | jq .[0].NetworkSettings.Networks.gomritech_default.IPAddress | sed 's/"//g'`
+redis_ip=`docker inspect ronin_redis_1 | jq .[0].NetworkSettings.Networks.ronin_default.IPAddress | sed 's/"//g'`
 sed -i "s/%REDIS_HOST%/$redis_ip/" .env
 
 docker exec -it $service ./setup.sh $db_ip $redis_ip
@@ -89,13 +97,13 @@ sudo truncate -s0 /etc/apache2/sites-available/$APP_DOMAIN.conf
 cat  <<EOF | sudo tee /etc/apache2/sites-available/$APP_DOMAIN.conf
 <VirtualHost *:80>
     ServerName $APP_DOMAIN
-    <Proxy balancer://gomritech>
+    <Proxy balancer://ronin>
         $__BALANCER_MEMBER__
     </Proxy>
 
     ProxyPreserveHost On
-    ProxyPass / balancer://gomritech/
-    ProxyPassReverse / balancer://gomritech/
+    ProxyPass / balancer://ronin/
+    ProxyPassReverse / balancer://ronin/
 </VirtualHost>
 EOF
 sudo a2ensite $APP_DOMAIN.conf
