@@ -116,6 +116,7 @@ Ronin will automatically use your `username` and id, to properly update /etc/pas
 of the guest machine, and set the permissions of the website directories and files
 so you can just move on with your life, with no problem's :)
 
+* To set php.ini configuration you can edit eather php-development.ini or php-production.ini in website/config/php-\*.ini
 * To update the virtual host of your website, please edit `website/config/000-default.conf`
 * To update apache2.conf used on your website, please edit `website/config/apache2.conf`
 * To change the user/id used on the website please edit `website/config/passwd`
