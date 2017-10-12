@@ -60,14 +60,14 @@ sudo apt install jq
 
 echo ------------------------------------------------------ Docker containers --
 DOCKER_PREFIX=`echo "$DOCKER_PREFIX" | tr -cd '[[:alpha:]]'`
-docker-compose down
+docker-compose -p $DOCKER_PREFIX down
 docker-compose -p $DOCKER_PREFIX up -d --build --scale website=$NUMBER_OF_WEBSITE_INSTANCES
 
 echo "---------------------------------------------- Get services ip address's --"
 echo -- Website services:
 __BALANCER_MEMBER__=
 
-for service in `docker-compose images | sed 1,2d | awk '{ print $1 }' | grep ${DOCKER_PREFIX}_website`
+for service in `docker-compose -p $DOCKER_PREFIX images | sed 1,2d | awk '{ print $1 }' | grep ${DOCKER_PREFIX}_website`
 do
     ip_website=`docker inspect $service | jq .[0].NetworkSettings.Networks.${DOCKER_PREFIX}_default.IPAddress | sed 's/"//g'`
     __BALANCER_MEMBER__+="BalancerMember http://${ip_website}"$'\n        '
