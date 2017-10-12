@@ -13,6 +13,8 @@ $ ./install
 
 once the installation is completed, open your browser and type `http://ronin.dev`
 
+[![asciicast](https://asciinema.org/a/142080.png)](https://asciinema.org/a/142080)
+
 # Configuration
 If you want to customize ronin, then rename `.env.example` to `.env` and
 edit the configuration.
