@@ -1,0 +1,48 @@
+version: "3.3"
+
+services:
+
+    # ----------------------------------------------------------- Database --
+    db:
+        image: mysql:5.7
+        expose:
+            - "3306"
+        environment:
+            - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+            - MYSQL_DATABASE=${DB_DATABASE}
+        volumes:
+            - ./db/config/var-lib-mysql:/var/lib/mysql
+
+    # -------------------------------------------------------------- Redis --
+    redis:
+        image: redis:4
+
+    # ------------------------------------------------------------ Website --
+    website:
+        build: ./website
+        volumes:
+            - ./website/src:/var/www/html
+            - ./website/config/000-default.conf:/etc/apache2/sites-available/000-default.conf
+            - ./website/config/apache2.conf:/etc/apache2/apache2.conf
+            - ./website/config/php-${APP_ENV}.ini:/usr/local/etc/php/php.ini
+            - ./website/config/passwd:/etc/passwd
+        environment:
+            - CACHE_PREFIX=${CACHE_PREFIX}
+            - X_APP_DEBUG=${APP_DEBUG}
+            - X_APP_ENV=${APP_ENV}
+            - X_APP_LOG_LEVEL=${APP_LOG_LEVEL}
+            - X_APP_NAME=${APP_NAME}
+            - X_BROADCAST_DRIVER=${BROADCAST_DRIVER}
+            - X_CACHE_DRIVER=${CACHE_DRIVER}
+            - X_DB_CONNECTION=${DB_CONNECTION}
+            - X_DB_DATABASE=${DB_DATABASE}
+            - X_DB_HOST=db
+            - X_DB_PASSWORD=${DB_PASSWORD}
+            - X_DB_PORT=${DB_PORT}
+            - X_DB_USERNAME=${DB_USERNAME}
+            - X_QUEUE_DRIVER=${QUEUE_DRIVER}
+            - X_REDIS_HOST=redis
+            - X_REDIS_PASSWORD=${REDIS_PASSWORD}
+            - X_REDIS_PORT=${REDIS_PORT}
+            - X_SESSION_DRIVER=${SESSION_DRIVER}
+            - X_SESSION_LIFETIME=${SESSION_LIFETIME}

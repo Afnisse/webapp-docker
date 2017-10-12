@@ -1,0 +1,108 @@
+#!/bin/bash
+
+set -e
+
+echo ------------------------------------------------------------------ Setup --
+if [ -f .env ]; then
+    sed -i 's/DB_HOST=.*/DB_HOST=%DB_HOST%/' .env
+    sed -i 's/REDIS_HOST=.*/REDIS_HOST=%REDIS_HOST%/' .env
+else
+    cp .env.example .env
+    echo "Please fill .env file"
+    exit
+fi
+
+. .env
+
+echo ----------------------------------------------------------- Installation --
+echo -- environment:
+if [ ! -f website/config/passwd ]; then
+    cp slugs/passwd website/config/passwd
+    sed -i "s/%USER%/$USER/" website/config/passwd
+fi
+
+echo -- website:
+if [ ! -d website/src ]; then
+    if [[ $APP_TYPE == "laravel" ]]; then
+        git clone https://github.com/laravel/laravel.git website/src
+        cd website/src
+        git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
+        rm -rf .git
+        git init
+        truncate -s0 CHANGELOG.md
+        truncate -s0 readme.md
+        cd ../..
+        cp slugs/laravel.env website/src/.env
+        cp slugs/laravel.env website/src/.env.example
+        cp slugs/laravel-setup.sh website/src/setup.sh
+        chmod +x website/src/setup.sh
+    else
+        echo "Please set a valid app type in .env file. available types: laravel"
+        exit
+    fi
+fi
+
+echo ---------------------------------------------------------- Configuration --
+number_of_website_instances=1
+
+export APP_URL=$APP_SCHEME://$APP_DOMAIN
+
+echo ---------------------------------------------- Install required packages --
+echo -- apache2 as reverse proxy:
+sudo apt install apache2
+sudo apt install jq
+
+echo ------------------------------------------------------ Docker containers --
+docker-compose down
+docker-compose up -d --build --scale website=$number_of_website_instances
+
+echo "---------------------------------------------- Get services ip address's --"
+echo -- Website services:
+__BALANCER_MEMBER__=
+
+for service in `docker-compose images | sed 1,2d | awk '{ print $1 }' | grep gomritech_website`
+do
+    ip_website=`docker inspect $service | jq .[0].NetworkSettings.Networks.gomritech_default.IPAddress | sed 's/"//g'`
+    __BALANCER_MEMBER__+="BalancerMember http://${ip_website}"$'\n        '
+done
+
+__BALANCER_MEMBER__="$(sed -e 's/[[:space:]]*$//' <<<${__BALANCER_MEMBER__})"
+
+echo -- DB services:
+db_ip=`docker inspect gomritech_db_1 | jq .[0].NetworkSettings.Networks.gomritech_default.IPAddress | sed 's/"//g'`
+sed -i "s/%DB_HOST%/$db_ip/" .env
+
+echo -- Redis services:
+redis_ip=`docker inspect gomritech_redis_1 | jq .[0].NetworkSettings.Networks.gomritech_default.IPAddress | sed 's/"//g'`
+sed -i "s/%REDIS_HOST%/$redis_ip/" .env
+
+docker exec -it $service ./setup.sh $db_ip $redis_ip
+
+echo ----------------------------------------------------- Host Configuration --
+echo -- apache2:
+sudo a2enmod proxy
+sudo a2enmod proxy_http
+sudo a2enmod proxy_balancer
+sudo a2enmod lbmethod_byrequests
+sudo cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/$APP_DOMAIN.conf
+sudo truncate -s0 /etc/apache2/sites-available/$APP_DOMAIN.conf
+cat  <<EOF | sudo tee /etc/apache2/sites-available/$APP_DOMAIN.conf
+<VirtualHost *:80>
+    ServerName $APP_DOMAIN
+    <Proxy balancer://gomritech>
+        $__BALANCER_MEMBER__
+    </Proxy>
+
+    ProxyPreserveHost On
+    ProxyPass / balancer://gomritech/
+    ProxyPassReverse / balancer://gomritech/
+</VirtualHost>
+EOF
+sudo a2ensite $APP_DOMAIN.conf
+sudo systemctl restart apache2.service
+
+echo -- /etc/hosts:
+sudo sed -i "/$APP_DOMAIN/d" /etc/hosts
+echo "127.0.0.1 $APP_DOMAIN" | sudo tee -a /etc/hosts
+
+# vi: set ft=sh
