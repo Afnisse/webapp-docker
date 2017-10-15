@@ -1,25 +1,25 @@
 > Built for personal use only.
 
-# What is ronin?
-**ronin** make it easy to run your website inside docker with just one click, for
+# What is Web-APP-Docker?
+**webapp-docker** make it easy to run your website inside docker with just one click, for
 both development and production.
 
 # Installation
 ```
-$ git clone https://github.com/OussamaElgoumri/ronin.git my-app
+$ git clone https://github.com/OussamaElgoumri/webapp-docker.git my-app
 $ cd my-app
 $ ./install
 ```
 
-once the installation is completed, open your browser and type `http://ronin.dev`
+once the installation is completed, open your browser and type `http://webapp-docker.dev`
 
 [![asciicast](https://asciinema.org/a/142080.png)](https://asciinema.org/a/142080)
 
 # Configuration
-If you want to customize ronin, then rename `.env.example` to `.env` and
+If you want to customize webapp-docker, then rename `.env.example` to `.env` and
 edit the configuration.
 
-By default ronin comes with full support to laravel framework, but it can be
+By default webapp-docker comes with full support to laravel framework, but it can be
 customized to support any framework, even custom websites.
 
 ## Add your website:
@@ -102,17 +102,17 @@ Redis password
 ### SESSION_LIFETIME
 `default: redis` session lifetime
 
-# How ronin work?
-on the host machine, ronin install `apache2` and use it as a reverse proxy, and a
+# How webapp-docker work?
+on the host machine, webapp-docker install `apache2` and use it as a reverse proxy, and a
 load balancer. it also uses `jq` to cleanly extract values from `docker inspect`
 command.
 
-`ronin` use 3 official images from hub.docker.com:
+`webapp-docker` use 3 official images from hub.docker.com:
 1. mysql:5.7
 2. redis:4
 3. php:7.0-apache
 
-Ronin will automatically use your `username` and id, to properly update /etc/passwd
+webapp-docker will automatically use your `username` and id, to properly update /etc/passwd
 of the guest machine, and set the permissions of the website directories and files
 so you can just move on with your life, with no problem's :)
 
@@ -126,7 +126,7 @@ so you can just move on with your life, with no problem's :)
 * support windows and mac
 * add configuration variables for php version, mysql version and redis
 * add support for other frameworks like wordpress, drupal..
-* make it easy to migrate an existing website to ronin
+* make it easy to migrate an existing website to webapp-docker
 * improve development and production configuration
 * allow developer to pick a revese proxy: nginx, apache2 or haproxy.
 * add an option for sql script path, to import the sql dump, instead of copying /var/lib/mysql
