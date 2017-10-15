@@ -29,6 +29,7 @@ services:
             - ./website/dump:/tmp/xdebug-profiler
         environment:
             - CACHE_PREFIX=${CACHE_PREFIX}
+            - X_APP_URL=${APP_SCHEME}://${APP_DOMAIN}
             - X_APP_DEBUG=${APP_DEBUG}
             - X_APP_ENV=${APP_ENV}
             - X_APP_LOG_LEVEL=${APP_LOG_LEVEL}
