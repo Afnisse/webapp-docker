@@ -56,4 +56,6 @@ fi
 chmod 664 storage/logs/laravel.log
 chmod +x setup.sh
 
-chown -R `tail -n1 /etc/passwd | cut -d':' -f1`:www-data /var/www/html
+user=`tail -n1 /etc/passwd | cut -d':' -f1`
+chown -R $user:www-data /var/www/html
+chown -R $user:www-data /tmp/xdebug-profiler
