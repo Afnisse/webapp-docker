@@ -2,3 +2,5 @@
 db/config/var-lib-mysql
 website/config/passwd
 website/src
+website/dump/*
+!website/dump/.gitkeep

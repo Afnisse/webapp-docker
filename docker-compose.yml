@@ -26,6 +26,7 @@ services:
             - ./website/config/apache2.conf:/etc/apache2/apache2.conf
             - ./website/config/php-${APP_ENV}.ini:/usr/local/etc/php/php.ini
             - ./website/config/passwd:/etc/passwd
+            - ./website/dump:/home/xdebug-profiler
         environment:
             - CACHE_PREFIX=${CACHE_PREFIX}
             - X_APP_DEBUG=${APP_DEBUG}
