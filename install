@@ -87,15 +87,7 @@ done
 
 __BALANCER_MEMBER__="$(sed -e 's/[[:space:]]*$//' <<<${__BALANCER_MEMBER__})"
 
-echo -- DB services:
-db_ip=`docker inspect ${DOCKER_PREFIX}_db_1 | jq .[0].NetworkSettings.Networks.${DOCKER_PREFIX}_default.IPAddress | sed 's/"//g'`
-sed -i "s/%DB_HOST%/$db_ip/" .env
-
-echo -- Redis services:
-redis_ip=`docker inspect ${DOCKER_PREFIX}_redis_1 | jq .[0].NetworkSettings.Networks.${DOCKER_PREFIX}_default.IPAddress | sed 's/"//g'`
-sed -i "s/%REDIS_HOST%/$redis_ip/" .env
-
-docker exec -it $service ./setup.sh $db_ip $redis_ip
+docker exec -it $service ./setup.sh
 
 echo ----------------------------------------------------- Host Configuration --
 echo -- apache2:

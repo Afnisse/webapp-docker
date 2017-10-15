@@ -7,7 +7,7 @@ sed -i "s/%APP_DEBUG%/${X_APP_DEBUG}/" .env
 sed -i "s/%APP_LOG_LEVEL%/${X_APP_LOG_LEVEL}/" .env
 sed -i "s/%APP_URL%/${X_APP_URL}/" .env
 sed -i "s/%DB_CONNECTION%/${X_DB_CONNECTION}/" .env
-sed -i "s/%DB_HOST%/$1/" .env
+sed -i "s/%DB_HOST%/${X_DB_HOST}/" .env
 sed -i "s/%DB_PORT%/${X_DB_PORT}/" .env
 sed -i "s/%DB_DATABASE%/${X_DB_DATABASE}/" .env
 sed -i "s/%DB_USERNAME%/${X_DB_USERNAME}/" .env
@@ -17,7 +17,7 @@ sed -i "s/%CACHE_DRIVER%/${X_CACHE_DRIVER}/" .env
 sed -i "s/%SESSION_DRIVER%/${X_SESSION_DRIVER}/" .env
 sed -i "s/%SESSION_LIFETIME%/${X_SESSION_LIFETIME}/" .env
 sed -i "s/%QUEUE_DRIVER%/${X_QUEUE_DRIVER}/" .env
-sed -i "s/%REDIS_HOST%/$2/" .env
+sed -i "s/%REDIS_HOST%/${X_REDIS_HOST}/" .env
 sed -i "s/%REDIS_PASSWORD%/${X_REDIS_PASSWORD}/" .env
 sed -i "s/%REDIS_PORT%/${X_REDIS_PORT}/" .env
 
