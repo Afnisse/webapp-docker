@@ -55,8 +55,16 @@ export APP_URL=$APP_SCHEME://$APP_DOMAIN
 
 echo ---------------------------------------------- Install required packages --
 echo -- apache2 as reverse proxy:
-sudo apt install apache2
-sudo apt install jq
+sudo apt install apache2 -y
+sudo apt install jq -y
+
+if ! hash docker-compose 2>/dev/null
+then
+    sudo curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-`uname -s`-`uname -m` \
+        -o /usr/local/bin/docker-compose
+
+    sudo chmod +x /usr/local/bin/docker-compose
+fi
 
 echo ------------------------------------------------------ Docker containers --
 DOCKER_PREFIX=`echo "$DOCKER_PREFIX" | tr -cd '[[:alpha:]]'`
