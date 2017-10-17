@@ -1,11 +1,13 @@
 #!/bin/bash
 
+set -e
+
 echo ----------------------------------------------------- Populate .env file --
 sed -i "s/%APP_NAME%/${X_APP_NAME}/" .env
 sed -i "s/%APP_ENV%/${X_APP_ENV}/" .env
 sed -i "s/%APP_DEBUG%/${X_APP_DEBUG}/" .env
 sed -i "s/%APP_LOG_LEVEL%/${X_APP_LOG_LEVEL}/" .env
-sed -i "s/%APP_URL%/${X_APP_URL}/" .env
+sed -i "s~%APP_URL%~${X_APP_URL}~" .env
 sed -i "s/%DB_CONNECTION%/${X_DB_CONNECTION}/" .env
 sed -i "s/%DB_HOST%/${X_DB_HOST}/" .env
 sed -i "s/%DB_PORT%/${X_DB_PORT}/" .env
