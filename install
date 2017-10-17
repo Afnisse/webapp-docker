@@ -75,6 +75,8 @@ DOCKER_PREFIX=`echo "$DOCKER_PREFIX" | tr -cd '[[:alpha:]]'`
 docker-compose -p $DOCKER_PREFIX down
 docker-compose -p $DOCKER_PREFIX up -d --build --scale website=$NUMBER_OF_WEBSITE_INSTANCES
 
+host_ip=`docker inspect testwebapp_website_1 | jq .[0].NetworkSettings.Networks.testwebapp_default.Gateway | sed 's/"//g'`
+
 echo "---------------------------------------------- Get services ip address's --"
 echo -- Website services:
 __BALANCER_MEMBER__=
@@ -83,6 +85,8 @@ for service in `docker-compose -p $DOCKER_PREFIX images | sed 1,2d | awk '{ prin
 do
     ip_website=`docker inspect $service | jq .[0].NetworkSettings.Networks.${DOCKER_PREFIX}_default.IPAddress | sed 's/"//g'`
     __BALANCER_MEMBER__+="BalancerMember http://${ip_website}"$'\n        '
+    sed -i "s/xdebug.remote_host=.*$/xdebug.remote_host=$host_ip/" website/config/php-development.ini
+    docker exec -it $service systemctl reload apache2.service
 done
 
 __BALANCER_MEMBER__="$(sed -e 's/[[:space:]]*$//' <<<${__BALANCER_MEMBER__})"
