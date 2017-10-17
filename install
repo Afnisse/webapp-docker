@@ -29,6 +29,10 @@ if [ ! -f website/config/passwd ]; then
     sed -i "s/%GID%/`id -g $USER`/" website/config/passwd
 fi
 
+if [ ! -f website/config/php-development.ini ]; then
+    cp slugs/php-development.ini website/config/php-development.ini
+fi
+
 echo -- website:
 if [ ! -d website/src ]; then
     if [[ $APP_TYPE == "laravel" ]]; then
