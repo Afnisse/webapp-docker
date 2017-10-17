@@ -1,6 +1,7 @@
 .env
 db/config/var-lib-mysql
 website/config/passwd
+website/config/php-development.ini
 website/src
 website/dump/*
 !website/dump/.gitkeep
