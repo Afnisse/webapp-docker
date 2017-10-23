@@ -2,7 +2,7 @@
 
 set -e
 
-echo ------------------------------------------------------------------ Setup --
+# ------------------------------------------------------------------ Setup --
 if [ -f .env ]; then
     sed -i 's/DB_HOST=.*/DB_HOST=%DB_HOST%/' .env
     sed -i 's/REDIS_HOST=.*/REDIS_HOST=%REDIS_HOST%/' .env
@@ -20,8 +20,8 @@ if [ ! -d db ]; then
     mkdir db/config/var-lib-mysql
 fi
 
-echo ----------------------------------------------------------- Installation --
-echo -- environment:
+# ----------------------------------------------------------- Installation --
+# -- environment:
 if [ ! -f website/config/passwd ]; then
     cp slugs/passwd website/config/passwd
     sed -i "s/%USER%/$USER/" website/config/passwd
@@ -33,7 +33,7 @@ if [ ! -f website/config/php-development.ini ]; then
     cp slugs/php-development.ini website/config/php-development.ini
 fi
 
-echo -- website:
+# -- website:
 if [ ! -d website/src ]; then
     if [[ $APP_TYPE == "laravel" ]]; then
         git clone https://github.com/laravel/laravel.git website/src
@@ -54,7 +54,7 @@ if [ ! -d website/src ]; then
     fi
 fi
 
-echo -- apache2 configuration:
+# -- apache2 configuration:
 
 APACHE_CONF=`cat slugs/apache2-${APP_ENV}.conf | sed '/^\s*#/d' | sed '/^$/d'`
 
@@ -104,11 +104,11 @@ ServerName localhost
 # vim: syntax=apache ts=4 sw=4 sts=4 sr noet
 EOF
 
-echo ---------------------------------------------------------- Configuration --
+# ---------------------------------------------------------- Configuration --
 export APP_URL=$APP_SCHEME://$APP_DOMAIN
 
-echo ---------------------------------------------- Install required packages --
-echo -- apache2 as reverse proxy:
+# ---------------------------------------------- Install required packages --
+# -- apache2 as reverse proxy:
 sudo apt install apache2 -y
 sudo apt install jq -y
 
@@ -119,12 +119,12 @@ if ! hash docker-compose 2>/dev/null; then
     sudo chmod +x /usr/local/bin/docker-compose
 fi
 
-echo ---------------------------------------------------- Docker requirements --
+# ---------------------------------------------------- Docker requirements --
 if ! getent group docker | grep &>/dev/null "\$USER\b"; then
     sudo usermod -aG docker $USER
 fi
 
-echo ------------------------------------------------------ Docker containers --
+# ------------------------------------------------------ Docker containers --
 DOCKER_PREFIX=`echo "$DOCKER_PREFIX" | tr -cd '[[:alpha:]]'`
 docker-compose -p $DOCKER_PREFIX down
 docker-compose -p $DOCKER_PREFIX up -d --build --scale website=$NUMBER_OF_WEBSITE_INSTANCES

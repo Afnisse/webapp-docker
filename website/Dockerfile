@@ -2,6 +2,8 @@ FROM php:7.0-apache
 
 MAINTAINER Oussama Elgoumri <ktsnepyg9igfz1@gmail.com>
 
+ARG APP_ENV
+
 WORKDIR /var/www/html
 
 # ------------------------------------------------------ Install utilities --
@@ -20,12 +22,9 @@ RUN pecl install redis \
     && docker-php-ext-install pdo pdo_mysql zip intl
 
 # ----------------------------------------- Install development extensions --
-RUN if [ $APP_ENV = 'development' ]; then \
-        pecl install xdebug \
-        docker-php-ext-enable xdebug \
-    fi
+RUN if [ "$APP_ENV" = "development" ]; then pecl install xdebug; docker-php-ext-enable xdebug; fi
 
 # ---------------------------------------------------------- Configuration --
-RUN for m in autoindex deflate expires filter headers include mime rewrite setenvif \
-    do a2enmod $m \
+RUN for m in autoindex deflate expires filter headers include mime rewrite setenvif; \
+    do a2enmod $m; \
     done

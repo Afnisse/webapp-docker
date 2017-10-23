@@ -2,7 +2,7 @@
 
 set -e
 
-echo ----------------------------------------------------- Populate .env file --
+# ----------------------------------------------------- Populate .env file --
 sed -i "s/%APP_NAME%/${X_APP_NAME}/" .env
 sed -i "s/%APP_ENV%/${X_APP_ENV}/" .env
 sed -i "s/%APP_DEBUG%/${X_APP_DEBUG}/" .env
@@ -23,11 +23,11 @@ sed -i "s/%REDIS_HOST%/${X_REDIS_HOST}/" .env
 sed -i "s/%REDIS_PASSWORD%/${X_REDIS_PASSWORD}/" .env
 sed -i "s/%REDIS_PORT%/${X_REDIS_PORT}/" .env
 
-echo ----------------------------------------------- Edit configuration files --
+# ----------------------------------------------- Edit configuration files --
 sed -i "s/'client' => 'predis',/'client' => 'phpredis',/" config/database.php
 sed -i "s/'prefix' => 'laravel',/'prefix' => '${CACHE_PREFIX}',/" config/cache.php
 
-echo ------------------------------------------------------ Composer packages --
+# ------------------------------------------------------ Composer packages --
 if [[ -d vendor ]]; then
     composer update
 else
@@ -36,14 +36,14 @@ fi
 
 php artisan key:generate
 
-echo ------------------------------------------------------------- Deployment --
+# ------------------------------------------------------------- Deployment --
 if [ $X_APP_ENV = 'deployment' ]; then
     composer install --optimize-autoloader
     php artisan config:cache
     php artisan route:cache
 fi
 
-echo ------------------------------------------------------ Setup permissions --
+# ------------------------------------------------------ Setup permissions --
 find /var/www/html -type f -exec chmod 644 {} \;
 find /var/www/html -type d -exec chmod 755 {} \;
 find /var/www/html/storage -type d -exec chmod 775 {} \;
