@@ -5,3 +5,4 @@ website/config/php-development.ini
 website/src
 website/dump/*
 !website/dump/.gitkeep
+website/config/apache2.conf

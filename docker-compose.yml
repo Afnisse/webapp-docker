@@ -19,7 +19,10 @@ services:
 
     # ------------------------------------------------------------ Website --
     website:
-        build: ./website
+        build:
+            context: ./website
+            args:
+                - APP_ENV=${APP_ENV}
         volumes:
             - ./website/src:/var/www/html
             - ./website/config/000-default.conf:/etc/apache2/sites-available/000-default.conf
